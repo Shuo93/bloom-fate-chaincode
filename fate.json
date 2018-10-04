@@ -1,0 +1,99 @@
+{
+    "schemaName": "fatecc",
+    "schemaTables": {
+        "account": {
+            "user_id": "VARCHAR",
+            "user_name": "VARCHAR",
+            "password": "VARCHAR",
+            "credit_value": "",
+            "created_time": "VARCHAR",
+            "COLUMN ORDER": ["user_id", "user_name", "password", "created_time"],
+            "PRIMARY KEY": ["user_id"]
+        },
+        "user_info": {
+            "user_id": "VARCHAR",
+            "name": "VARCHAR",
+            "age": "TINYINT",
+            "sex": "TINYINT",
+            "address": "VARCHAR",
+            "photo_hash": "CHAR(32)",
+            "photo_format": "VARCHAR",
+            "phone": "",
+            "email": ""
+        },
+        "user_gallery": {
+            "hash":"VARCHAR",
+            "user_id":"VARCHAR",
+            "format":"VARCHAR",
+            "s_key":"VARCHAR",
+            "signature":"",
+            "upload_time":""
+        },
+        "user_edu": {
+            "user_id": "VARCHAR",
+            "degree": "",
+            "school": "",
+            "secert_key": "",
+            "signature": "",
+            "modified_time": "",
+            "COLUMN ORDER": [
+
+            ],
+            "PRIMARY KEY": [
+                "user_id"
+            ]
+        },
+        "user_occupation": {
+            "user_id": "",
+            "company": "",
+            "job": "",
+            "salary": "",
+            "secert_key": "",
+            "signature": "",
+            "modified_time": "",
+            "COLUMN ORDER":[
+                
+            ],
+            "PRIMARY KEY":[
+                "user_id"
+            ]
+        },
+        "user_credit": {
+            "user_id":"VARCHAR",
+            "general":"",
+            "photo":"",
+            "education":"",
+            "occupation":"",
+            "impression":"",
+            "other":""
+        },
+        "date": {
+            "date_id":"",
+            "sender_id":"",
+            "receiver_id":"",
+            "location":"",
+            "date_time":"",
+            "message":"",
+            "status":"",
+            "send_time":"",
+            "comfirm_time":""
+        },
+        "permission": {
+            "permission_id": "",
+            "sender_id":"",
+            "receiver_id":"",
+            "status":"",
+            "send_time":"",
+            "comfirm_time":""
+        },
+        "like": {
+            "like_id":"",
+            "user_id":"",
+            "liker_id":"",
+            "created_time":""
+        },
+
+
+
+    }
+}
