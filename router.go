@@ -25,5 +25,5 @@ func (t *BloomFateChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Respons
 	case "login":
 		return login(stub, args[0])
 	}
-	return shim.Success(nil)
+	return shim.Success([]byte("default result"))
 }
