@@ -2,15 +2,16 @@
     "schemaName": "fatecc",
     "schemaTables": {
         "account": {
-            "user_id": "VARCHAR",
-            "user_name": "VARCHAR",
-            "password": "VARCHAR",
-            "credit_value": "",
-            "created_time": "VARCHAR",
+            "user_id": "VARCHAR(32)",
+            "user_name": "VARCHAR(20)",
+            "password": "VARCHAR(32)",
+            "credit_value": "DECIMAL(2,1)",
+            "created_time": "VARCHAR(14)",
             "COLUMN ORDER": [
                 "user_id",
                 "user_name",
                 "password",
+                "credit_value",
                 "created_time"
             ],
             "PRIMARY KEY": [
@@ -18,99 +19,183 @@
             ]
         },
         "user_info": {
-            "user_id": "VARCHAR",
-            "name": "VARCHAR",
+            "user_id": "VARCHAR(32)",
+            "name": "VARCHAR(10)",
             "age": "TINYINT",
-            "sex": "TINYINT",
-            "address": "VARCHAR",
-            "photo_hash": "CHAR(32)",
-            "photo_format": "VARCHAR",
-            "phone": "",
-            "email": "",
+            "sex": "VARCHAR(5)",
+            "location": "VARCHAR(50)",
+            "photo_hash": "VARCHAR(32)",
+            "photo_format": "VARCHAR(10)",
+            "phone": "VARCHAR(20)",
+            "email": "VARCHAR(20)",
+            "modified_time": "VARCHAR(14)",
+            "COLUMN ORDER": [
+                "user_id",
+                "name",
+                "age",
+                "sex",
+                "location",
+                "photo_hash",
+                "photo_format",
+                "phone",
+                "email",
+                "modified_time"
+            ],
             "PRIMARY KEY": [
                 "user_id"
             ]
         },
         "user_gallery": {
-            "hash": "VARCHAR",
-            "user_id": "VARCHAR",
-            "format": "VARCHAR",
-            "s_key": "VARCHAR",
-            "signature": "",
-            "upload_time": "",
+            "hash": "VARCHAR(32)",
+            "user_id": "VARCHAR(32)",
+            "format": "VARCHAR(10)",
+            "encrypted_key": "VARCHAR(100)",
+            "signature": "VARCHAR(100)",
+            "modified_time": "VARCHAR(14)",
+            "COLUMN ORDER": [
+                "hash",
+                "user_id",
+                "format",
+                "encrypted_key",
+                "signature",
+                "modified_time"
+            ],
             "PRIMARY KEY": [
                 "hash"
             ]
         },
-        "user_edu": {
-            "user_id": "VARCHAR",
-            "degree": "",
-            "school": "",
-            "secert_key": "",
-            "signature": "",
-            "modified_time": "",
-            "COLUMN ORDER": [],
+        "user_education": {
+            "user_id": "VARCHAR(32)",
+            "degree": "VARCHAR(20)",
+            "school": "VARCHAR(50)",
+            "encrypted_key": "VARCHAR(100)",
+            "signature": "VARCHAR(100)",
+            "modified_time": "VARCHAR(14)",
+            "COLUMN ORDER": [
+                "user_id",
+                "degree",
+                "school",
+                "encrypted_key",
+                "signature",
+                "modified_time"
+            ],
             "PRIMARY KEY": [
                 "user_id"
             ]
         },
         "user_occupation": {
-            "user_id": "",
-            "company": "",
-            "job": "",
-            "salary": "",
-            "secert_key": "",
-            "signature": "",
-            "modified_time": "",
+            "user_id": "VARCHAR(32)",
+            "company": "VARCHAR(50)",
+            "job": "VARCHAR(20)",
+            "salary": "INTEGER",
+            "encrypted_key": "VARCHAR(100)",
+            "signature": "VARCHAR(100)",
+            "modified_time": "VARCHAR(14)",
             "COLUMN ORDER": [],
             "PRIMARY KEY": [
                 "user_id"
             ]
         },
         "user_credit": {
-            "user_id": "VARCHAR",
-            "general": "",
-            "photo": "",
-            "education": "",
-            "occupation": "",
-            "impression": "",
-            "other": "",
+            "user_id": "VARCHAR(32)",
+            "general": "DECIMAL(2,1)",
+            "photo": "DECIMAL(2,1)",
+            "education": "DECIMAL(2,1)",
+            "occupation": "DECIMAL(2,1)",
+            "impression": "DECIMAL(2,1)",
+            "other": "DECIMAL(2,1)",
+            "COLUMN ORDER": [
+                "date_id",
+                "general",
+                "photo",
+                "education",
+                "occupation",
+                "impression",
+                "other"
+            ],
             "PRIMARY KEY": [
                 "user_id"
             ]
         },
+        "date_measure": {
+            "date_id": "VARCHAR(32)",
+            "general": "TINYINT",
+            "photo": "TINYINT",
+            "education": "TINYINT",
+            "occupation": "TINYINT",
+            "impression": "TINYINT",
+            "other": "TINYINT",
+            "COLUMN ORDER": [
+                "date_id",
+                "general",
+                "photo",
+                "education",
+                "occupation",
+                "impression",
+                "other"
+            ],
+            "PRIMARY KEY": [
+                "date_id"
+            ]
+        },
         "date": {
-            "date_id": "",
-            "sender_id": "",
-            "receiver_id": "",
-            "location": "",
-            "date_time": "",
-            "message": "",
-            "status": "",
-            "send_time": "",
-            "comfirm_time": "",
+            "date_id": "VARCHAR(32)",
+            "sender_id": "VARCHAR(32)",
+            "receiver_id": "VARCHAR(32)",
+            "location": "VARCHAR(20)",
+            "date_time": "VARCHAR(14)",
+            "message": "VARCHAR(100)",
+            "status": "VARCHAR(10)",
+            "send_time": "VARCHAR(14)",
+            "comfirm_time": "VARCHAR(14)",
+            "COLUMN ORDER": [
+                "date_id",
+                "sender_id",
+                "receiver_id",
+                "locaton",
+                "date_time",
+                "message",
+                "status",
+                "send_time",
+                "comfirm_time"
+            ],
             "PRIMARY KEY": [
                 "date_id"
             ]
         },
         "permission": {
-            "permission_id": "",
-            "sender_id": "",
-            "receiver_id": "",
-            "status": "",
-            "send_time": "",
-            "comfirm_time": "",
+            "permission_id": "VARCHAR(32)",
+            "sender_id": "VARCHAR(32)",
+            "receiver_id": "VARCHAR(32)",
+            "permission_content": "VARCHAR(50)",
+            "status": "VARCHAR(10)",
+            "send_time": "VARCHAR(14)",
+            "comfirm_time": "VARCHAR(14)",
+            "COLUMN ORDER": [
+                "permission_id",
+                "sender_id",
+                "receiver_id",
+                "permission_content",
+                "status",
+                "send_time",
+                "comfirm_time"
+            ],
             "PRIMARY KEY": [
                 "permission_id"
             ]
         },
         "like": {
-            "like_id": "",
-            "user_id": "",
-            "liker_id": "",
-            "created_time": "",
+            "user_id": "VARCHAR(32)",
+            "liker_id": "VARCHAR(32)",
+            "created_time": "VARCHAR(14)",
+            "COLUMN ORDER": [
+                "user_id",
+                "liker_id",
+                "created_time"
+            ],
             "PRIMARY KEY": [
-                "like_id"
+                "user_id",
+                "liker_id"
             ]
         }
     }
