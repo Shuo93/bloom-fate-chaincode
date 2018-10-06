@@ -61,7 +61,7 @@ func login(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	if len(sqlResult) < 2 {
 		return shim.Error("Error, no info found")
 	}
-	num, err := strconv.Atoi(sqlResult[1][0])
+	num, err := strconv.Atoi(r[0])
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -77,7 +77,7 @@ func login(stub shim.ChaincodeStubInterface, args string) pb.Response {
 type basicMessage struct {
 	userID      string
 	name        string
-	age         int64
+	age         string
 	sex         string
 	location    string
 	photoHash   string
@@ -96,7 +96,7 @@ type educationMessage struct {
 type occupationMessage struct {
 	company      string
 	job          string
-	salary       int64
+	salary       string
 	encryptedKey string
 	signature    string
 }
@@ -115,7 +115,7 @@ func uploadPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Respon
 	modifiedTime := time.Now().Format("20060102150405")
 	sqlStr := "insert into user_basic (user_id, name, age, sex, location, photo_hash, photo_format, " +
 		"phone, email, modified_time) values (" + m.basic.userID + ", " + m.basic.name + ", " +
-		strconv.FormatInt(m.basic.age, 10) + ", " + m.basic.sex + ", " + m.basic.photoHash + ", " +
+		m.basic.age + ", " + m.basic.sex + ", " + m.basic.photoHash + ", " +
 		m.basic.photoFormat + ", " + m.basic.phone + ", " + m.basic.email + ", " + modifiedTime + ")"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
@@ -130,8 +130,139 @@ func uploadPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Respon
 }
 
 func queryPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
-	
-	return shim.Success(nil)
+	type message struct {
+		userID string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+
+	sqlStr := "select name, age, sex, location, photo_hash, photo_format, phone, email " +
+		"from user_basic where user_id = " + m.userID
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if len(sqlResult) < 2 {
+		return shim.Error("Error, no data for the user")
+	}
+	if len(sqlResult) > 2 {
+		return shim.Error("Error, redundant data for the user")
+	}
+	basic := basicMessage{
+		m.userID,
+		r[0],
+		r[1],
+		r[2],
+		r[3],
+		r[4],
+		r[5],
+		r[6],
+		r[7]}
+
+	sqlStr = "select degree, school, encrypted_key, signature " +
+		"from user_education where user_id = " + m.userID
+
+	sqlResult, err = queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if len(sqlResult) < 2 {
+		return shim.Error("Error, no data for the user")
+	}
+	if len(sqlResult) > 2 {
+		return shim.Error("Error, redundant data for the user")
+	}
+	education := educationMessage{
+		r[0],
+		r[1],
+		r[2],
+		r[3]}
+
+	sqlStr = "select company, job, salary, encrypted_key, signature " +
+		"from user_occupation where user_id = " + m.userID
+	sqlResult, err = queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if len(sqlResult) < 2 {
+		return shim.Error("Error, no data for the user")
+	}
+	if len(sqlResult) > 2 {
+		return shim.Error("Error, redundant data for the user")
+	}
+	occupation := occupationMessage{
+		r[0],
+		r[1],
+		r[2],
+		r[3],
+		r[4]}
+
+	type response struct {
+		basic      basicMessage
+		education  educationMessage
+		occupation occupationMessage
+	}
+	res := response{basic, education, occupation}
+	resBytes, err := json.Marshal(res)
+	if err != nil {
+		return shim.Error("Error, wrong data format")
+	}
+	return shim.Success(resBytes)
+}
+
+func queryPersonList(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		ageStart string
+		ageEnd   string
+		sex      string
+		location string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "select user_id, name, age, sex, location, " +
+		"photo_hash, photo_format, phone, email from user_basic"
+	if m.sex != "" {
+		sqlStr += " where sex = " + m.sex
+	}
+	if m.location != "" {
+		sqlStr += " and location = " + m.location
+	}
+	if m.ageStart != "" && m.ageEnd != "" {
+		sqlStr += " and age between " + m.ageStart + " and " + m.ageEnd
+	}
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if len(sqlResult) < 2 {
+		return shim.Error("Error, no data for the user")
+	}
+
+	var res [len(sqlResult) - 1]basicMessage
+	for i, r := range sqlResult[1:] {
+		basic := basicMessage{
+			r[0],
+			r[1],
+			r[2],
+			r[3],
+			r[4],
+			r[5],
+			r[6],
+			r[7],
+			r[8]}
+		res[i] = basic
+	}
+	resBytes, err := json.Marshal(res)
+	if err != nil {
+		return shim.Error("Error, wrong data format")
+	}
+	return shim.Success(resBytes)
 }
 
 func invokeBySQL(stub shim.ChaincodeStubInterface, sqlStr string) error {
