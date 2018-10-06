@@ -61,7 +61,7 @@ func login(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	if len(sqlResult) < 2 {
 		return shim.Error("Error, no info found")
 	}
-	num, err := strconv.Atoi(r[0])
+	num, err := strconv.Atoi(sqlResult[1][0])
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -153,14 +153,14 @@ func queryPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Respons
 	}
 	basic := basicMessage{
 		m.userID,
-		r[0],
-		r[1],
-		r[2],
-		r[3],
-		r[4],
-		r[5],
-		r[6],
-		r[7]}
+		sqlResult[1][0],
+		sqlResult[1][1],
+		sqlResult[1][2],
+		sqlResult[1][3],
+		sqlResult[1][4],
+		sqlResult[1][5],
+		sqlResult[1][6],
+		sqlResult[1][7]}
 
 	sqlStr = "select degree, school, encrypted_key, signature " +
 		"from user_education where user_id = " + m.userID
@@ -176,10 +176,10 @@ func queryPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Respons
 		return shim.Error("Error, redundant data for the user")
 	}
 	education := educationMessage{
-		r[0],
-		r[1],
-		r[2],
-		r[3]}
+		sqlResult[1][0],
+		sqlResult[1][1],
+		sqlResult[1][2],
+		sqlResult[1][3]}
 
 	sqlStr = "select company, job, salary, encrypted_key, signature " +
 		"from user_occupation where user_id = " + m.userID
@@ -194,11 +194,11 @@ func queryPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Respons
 		return shim.Error("Error, redundant data for the user")
 	}
 	occupation := occupationMessage{
-		r[0],
-		r[1],
-		r[2],
-		r[3],
-		r[4]}
+		sqlResult[1][0],
+		sqlResult[1][1],
+		sqlResult[1][2],
+		sqlResult[1][3],
+		sqlResult[1][4]}
 
 	type response struct {
 		basic      basicMessage
@@ -244,7 +244,8 @@ func queryPersonList(stub shim.ChaincodeStubInterface, args string) pb.Response 
 		return shim.Error("Error, no data for the user")
 	}
 
-	var res [len(sqlResult) - 1]basicMessage
+	size := len(sqlResult) - 1
+	res := make([]basicMessage, size)
 	for i, r := range sqlResult[1:] {
 		basic := basicMessage{
 			r[0],
