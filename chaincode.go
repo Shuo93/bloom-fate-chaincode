@@ -14,8 +14,9 @@ var logger = shim.NewLogger("BloomFate")
 
 func register(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
-		username string
-		password string
+		username  string
+		password  string
+		publicKey string
 	}
 	b := []byte(args)
 	var m message
@@ -28,9 +29,9 @@ func register(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	password := string(hashBytes[:])
 	initValue := "50"
 	createdTime := time.Now().Format("20060102150405")
-	sqlStr := "insert into account (user_id, user_name, password, credit_value, created_time) " +
+	sqlStr := "insert into account (user_id, user_name, password, credit_value, public_key, created_time) " +
 		"values (" + userID + ", " + m.username + ", " + password +
-		", " + initValue + ", " + createdTime + ")"
+		", " + initValue + ", " + m.publicKey + ", " + createdTime + ")"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
@@ -70,6 +71,66 @@ func login(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	if num != 1 {
 		return shim.Error("Error, more than one account registered")
 	}
+	return shim.Success([]byte(userID))
+}
+
+type basicMessage struct {
+	userID      string
+	name        string
+	age         int64
+	sex         string
+	location    string
+	photoHash   string
+	photoFormat string
+	phone       string
+	email       string
+}
+
+type educationMessage struct {
+	degree       string
+	school       string
+	encryptedKey string
+	signature    string
+}
+
+type occupationMessage struct {
+	company      string
+	job          string
+	salary       int64
+	encryptedKey string
+	signature    string
+}
+
+func uploadPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		basic      basicMessage
+		education  educationMessage
+		occupation occupationMessage
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	modifiedTime := time.Now().Format("20060102150405")
+	sqlStr := "insert into user_basic (user_id, name, age, sex, location, photo_hash, photo_format, " +
+		"phone, email, modified_time) values (" + m.basic.userID + ", " + m.basic.name + ", " +
+		strconv.FormatInt(m.basic.age, 10) + ", " + m.basic.sex + ", " + m.basic.photoHash + ", " +
+		m.basic.photoFormat + ", " + m.basic.phone + ", " + m.basic.email + ", " + modifiedTime + ")"
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
+
+	sqlStr = "insert into user_credit (user_id, general, photo, education, occupation, impression, )" +
+		"other, date_num) values (" + m.basic.userID + ", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0"
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(nil)
+}
+
+func queryPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	
 	return shim.Success(nil)
 }
 

@@ -6,19 +6,21 @@
             "user_name": "VARCHAR(20)",
             "password": "VARCHAR(32)",
             "credit_value": "DECIMAL(2,1)",
+            "public_key": "VARCHAR(100)",
             "created_time": "VARCHAR(14)",
             "COLUMN ORDER": [
                 "user_id",
                 "user_name",
                 "password",
                 "credit_value",
+                "public_key",
                 "created_time"
             ],
             "PRIMARY KEY": [
                 "user_id"
             ]
         },
-        "user_info": {
+        "user_basic": {
             "user_id": "VARCHAR(32)",
             "name": "VARCHAR(10)",
             "age": "TINYINT",
@@ -112,6 +114,7 @@
             "occupation": "DECIMAL(2,1)",
             "impression": "DECIMAL(2,1)",
             "other": "DECIMAL(2,1)",
+            "date_num": "INTEGER",
             "COLUMN ORDER": [
                 "user_id",
                 "general",
@@ -119,7 +122,8 @@
                 "education",
                 "occupation",
                 "impression",
-                "other"
+                "other",
+                "date_num"
             ],
             "PRIMARY KEY": [
                 "user_id"
@@ -146,7 +150,7 @@
                 "date_id"
             ]
         },
-        "date": {
+        "date_list": {
             "date_id": "VARCHAR(32)",
             "sender_id": "VARCHAR(32)",
             "receiver_id": "VARCHAR(32)",
@@ -177,6 +181,7 @@
             "receiver_id": "VARCHAR(32)",
             "permission_content": "VARCHAR(50)",
             "status": "VARCHAR(10)",
+            "encrypted_key": "VARCHAR(100)",
             "send_time": "VARCHAR(14)",
             "comfirm_time": "VARCHAR(14)",
             "COLUMN ORDER": [
@@ -185,6 +190,7 @@
                 "receiver_id",
                 "permission_content",
                 "status",
+                "encrypted_key",
                 "send_time",
                 "comfirm_time"
             ],
