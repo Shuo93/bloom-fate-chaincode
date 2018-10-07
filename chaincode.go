@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"bytes"
 	"crypto/sha256"
 	"encoding/json"
 	"strconv"
@@ -266,9 +268,256 @@ func queryPersonList(stub shim.ChaincodeStubInterface, args string) pb.Response 
 	return shim.Success(resBytes)
 }
 
+func modifyPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		userID       string
+		infoType     string
+		feild        string
+		value        string
+		encryptedKey string
+		signature    string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	modifiedTime := time.Now().Format("20060102150405")
+	var sqlStr string
+	if m.encryptedKey == "" || m.signature == "" {
+		sqlStr = "insert into user_" + m.infoType + " (user_id, " + m.feild + ", modified_time) values (" +
+			m.userID + ", " + m.value + ", " + modifiedTime + ")"
+	} else {
+		sqlStr = "insert into user_" + m.infoType + " (user_id, " + m.feild + ", encrypted_key, signature, modified_time) values (" +
+			m.userID + ", " + m.value + ", " + m.encryptedKey + ", " + m.signature + ", " + modifiedTime + ")"
+	}
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(nil)
+}
+
+func sendDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		senderID   string
+		receiverID string
+		location   string
+		dateTime   string
+		message    string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	status := "pending"
+	sendTime := time.Now().Format("20060102150405")
+	sqlStr := "insert into date_list (sender_id, receiver_id, location, " +
+		"date_time, message, status, send_time) values (" + m.senderID + ", " + m.receiverID +
+		", " + m.location + ", " + m.dateTime + ", " + m.message + ", " + status + ", " + sendTime + ")"
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(nil)
+}
+
+func queryDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		userType string
+		userID   string
+		status   string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "select sender_id, receiver_id, location, date_time, message, status, send_time, confirm_time from date_list where " + m.userType + " = " + m.userID
+	if m.status != "" {
+		sqlStr += " and status = " + m.status
+	}
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(convertSQLResultToJSON(sqlResult))
+}
+
+func convertSQLResultToJSON(sqlResult [][]string) []byte {
+	var buf bytes.Buffer
+	buf.WriteString("[")
+	for i := 1; i < len(sqlResult); i++ {
+		if i != 1 {
+			buf.WriteString(",")
+		}
+		buf.WriteString("{")
+		for j, key := range sqlResult[0] {
+			if j != 0 {
+				buf.WriteString(",")
+			}
+			buf.WriteString("\"")
+			buf.WriteString(key)
+			buf.WriteString("\"")
+			buf.WriteString(":")
+			buf.WriteString("\"")
+			buf.WriteString(sqlResult[i][j])
+			buf.WriteString("\"")
+		}
+		buf.WriteString("}")
+	}
+	buf.WriteString("]")
+	return buf.Bytes()
+}
+
+func replyDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		senderID   string
+		reveiverID string
+		status     string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "insert into date_list (sender_id, receiver_id, status) values (" +
+		m.senderID + ", " + m.reveiverID + ", " + m.status + ")"
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(nil)
+}
+
+func confirmDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		senderID   string
+		reveiverID string
+		status     string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "select status from date_list where sender_id = " +
+		m.senderID + " and receiver_id = " + m.reveiverID
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	status := sqlResult[1][0]
+	if status == "confirmed" || status == "reject" || status == "pending" {
+		return shim.Error("Error, wrong date status: " + status)
+	}
+	if status == "approve" {
+		sqlStr = "insert into date_list (sender_id, receiver_id, status)" +
+			" values (" + m.senderID + ", " + m.reveiverID + ", " + "confirm" + ")"
+	}
+	if status == "confirm" {
+		confirmTime := time.Now().Format("20060102150405")
+		sqlStr = "insert into date_list (sender_id, receiver_id, status, confirm_time)" +
+			" values (" + m.senderID + ", " + m.reveiverID + ", " + "confirmed" + ", " + confirmTime + ")"
+	}
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(nil)
+}
+
+func like(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		userID  string
+		likerID string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	createdTime := time.Now().Format("20060102150405")
+	sqlStr := "insert into like_list (user_id, liker_id, created_time) values (" +
+		m.userID + ", " + m.likerID + ", " + createdTime + ")"
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(nil)
+}
+
+func unlike(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		userID  string
+		likerID string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "delete from like_list where user_id = " + m.userID + " and liker_id = " + m.likerID
+	if err := deleteBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(nil)
+}
+
+func queryLikeList(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		userID string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "select liker_id, created_time from like_list where user_id = " + m.userID
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(convertSQLResultToJSON(sqlResult))
+}
+
+func sendPermission(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	return shim.Success(nil)
+}
+
+func queryPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	return shim.Success(nil)
+}
+
+func replyPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	return shim.Success(nil)
+}
+
+func queryModifyRecord(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	return shim.Success(nil)
+}
+
+func measure(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	return shim.Success(nil)
+}
+
+func exchangeCreditValue(sender string, receiver string, value string) error {
+	return errors.New("")
+}
+
+func changeCreditValue(user string, value string) error {
+	return errors.New("")
+}
+
 func invokeBySQL(stub shim.ChaincodeStubInterface, sqlStr string) error {
 	logger.Infof("execute sql: %s" + sqlStr)
 	// if err := stub.PutStateBySql(sqlStr); err != nil {
+	// 	logger.Errorf("execute sql error occur: " + err)
+	// 	return err
+	// }
+	logger.Infof("execute sql success")
+	return nil
+}
+
+func deleteBySQL(stub shim.ChaincodeStubInterface, sqlStr string) error {
+	logger.Infof("execute sql: %s" + sqlStr)
+	// if err := stub.DeleteStateBySql(sqlStr); err != nil {
 	// 	logger.Errorf("execute sql error occur: " + err)
 	// 	return err
 	// }
