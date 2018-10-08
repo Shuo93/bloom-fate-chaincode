@@ -1,10 +1,11 @@
 package main
 
 import (
-	"errors"
 	"bytes"
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -13,6 +14,8 @@ import (
 )
 
 var logger = shim.NewLogger("BloomFate")
+
+const timestampFormat = "20060102150405"
 
 func register(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
@@ -478,14 +481,71 @@ func queryLikeList(stub shim.ChaincodeStubInterface, args string) pb.Response {
 }
 
 func sendPermission(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		senderID          string
+		receiverID        string
+		permissionType    string
+		permissionContent string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sendTime := time.Now().Format(timestampFormat)
+	status := "pending"
+	sqlStr := "insert into permission (send_id, receiver_id, permission_type, permission_content, " +
+		"status, send_time) values (" + m.senderID + ", " + m.receiverID + ", " + m.permissionType +
+		", " + m.permissionContent + ", " + status + ", " + sendTime + ")"
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
 	return shim.Success(nil)
 }
 
 func queryPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
-	return shim.Success(nil)
+	type message struct {
+		userType string
+		userID   string
+		status   string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "select sender_id, receiver_id, permission_type, permission_content," +
+		" status, encrypted_key, send_time from permission where " + m.userType + " = " + m.userID
+	if m.status != "" {
+		sqlStr += " and status = " + m.status
+	}
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
 func replyPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		senderID          string
+		receiverID        string
+		permissionContent string
+		status            string
+		encryptedKey      string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	confirmTime := time.Now().Format(timestampFormat)
+	sqlStr := "insert into permission (sender_id, receiver_id, permission_content," +
+		" status, encrypted_key, confirm_time) values (" + m.senderID + ", " + m.receiverID + ", " +
+		m.permissionContent + ", " + m.status + ", " + m.encryptedKey + ", " + confirmTime + ")"
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
 	return shim.Success(nil)
 }
 
@@ -497,12 +557,61 @@ func measure(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	return shim.Success(nil)
 }
 
-func exchangeCreditValue(sender string, receiver string, value string) error {
-	return errors.New("")
+func exchangeCreditValue(sender string, receiver string, value string, stub shim.ChaincodeStubInterface) error {
+	if err := subtractCreditValue(sender, value, stub); err != nil {
+		return err
+	}
+	if err := addCreditValue(receiver, value, stub); err != nil {
+		return err
+	}
+	return nil
 }
 
-func changeCreditValue(user string, value string) error {
-	return errors.New("")
+func addCreditValue(userID string, valueStr string, stub shim.ChaincodeStubInterface) error {
+	balance, value, err := getBalanceAndValue(userID, valueStr, stub)
+	if err != nil {
+		return err
+	}
+	balance += value
+	return changeCreditValue(userID, balance, stub)
+}
+
+func subtractCreditValue(userID string, valueStr string, stub shim.ChaincodeStubInterface) error {
+	balance, value, err := getBalanceAndValue(userID, valueStr, stub)
+	if err != nil {
+		return err
+	}
+	if balance < value {
+		return errors.New("value have to be smaller than balance")
+	}
+	balance -= value
+	return changeCreditValue(userID, balance, stub)
+}
+
+func changeCreditValue(userID string, balance float64, stub shim.ChaincodeStubInterface) error {
+	sqlStr := "insert into account (user_id, credit_value) values (" + userID +
+		", " + fmt.Sprintf("%.1f", balance) + ")"
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return err
+	}
+	return nil
+}
+
+func getBalanceAndValue(userID string, valueStr string, stub shim.ChaincodeStubInterface) (float64, float64, error) {
+	value, err := strconv.ParseFloat(valueStr, 64)
+	if err != nil {
+		return 0, 0, err
+	}
+	sqlStr := "select credit_value from account where user_id = " + userID
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return 0, value, err
+	}
+	balance, err := strconv.ParseFloat(sqlResult[1][0], 64)
+	if err != nil {
+		return 0, value, err
+	}
+	return balance, value, err
 }
 
 func invokeBySQL(stub shim.ChaincodeStubInterface, sqlStr string) error {
