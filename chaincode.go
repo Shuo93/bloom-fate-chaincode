@@ -17,7 +17,9 @@ var logger = shim.NewLogger("BloomFate")
 
 const timestampFormat = "20060102150405"
 
-func register(stub shim.ChaincodeStubInterface, args string) pb.Response {
+type chaincodeImpl struct{}
+
+func (c *chaincodeImpl) register(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		username  string
 		password  string
@@ -43,7 +45,7 @@ func register(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	return shim.Success(nil)
 }
 
-func login(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) login(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		username string
 		password string
@@ -106,7 +108,7 @@ type occupationMessage struct {
 	signature    string
 }
 
-func uploadPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) uploadPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		basic      basicMessage
 		education  educationMessage
@@ -134,7 +136,7 @@ func uploadPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Respon
 	return shim.Success(nil)
 }
 
-func queryPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) queryPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID string
 	}
@@ -218,7 +220,7 @@ func queryPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Respons
 	return shim.Success(resBytes)
 }
 
-func queryPersonList(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) queryPersonList(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		ageStart string
 		ageEnd   string
@@ -271,7 +273,7 @@ func queryPersonList(stub shim.ChaincodeStubInterface, args string) pb.Response 
 	return shim.Success(resBytes)
 }
 
-func modifyPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) modifyPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID       string
 		infoType     string
@@ -300,7 +302,7 @@ func modifyPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Respon
 	return shim.Success(nil)
 }
 
-func sendDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) sendDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		senderID   string
 		receiverID string
@@ -324,7 +326,7 @@ func sendDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	return shim.Success(nil)
 }
 
-func queryDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) queryDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userType string
 		userID   string
@@ -372,7 +374,7 @@ func convertSQLResultToJSON(sqlResult [][]string) []byte {
 	return buf.Bytes()
 }
 
-func replyDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) replyDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		senderID   string
 		reveiverID string
@@ -391,7 +393,7 @@ func replyDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	return shim.Success(nil)
 }
 
-func confirmDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) confirmDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		senderID   string
 		reveiverID string
@@ -427,7 +429,7 @@ func confirmDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	return shim.Success(nil)
 }
 
-func like(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) like(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID  string
 		likerID string
@@ -446,7 +448,7 @@ func like(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	return shim.Success(nil)
 }
 
-func unlike(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) unlike(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID  string
 		likerID string
@@ -463,7 +465,7 @@ func unlike(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	return shim.Success(nil)
 }
 
-func queryLikeList(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) queryLikeList(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID string
 	}
@@ -480,7 +482,7 @@ func queryLikeList(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
-func sendPermission(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) sendPermission(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		senderID          string
 		receiverID        string
@@ -503,7 +505,7 @@ func sendPermission(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	return shim.Success(nil)
 }
 
-func queryPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) queryPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userType string
 		userID   string
@@ -526,7 +528,7 @@ func queryPermession(stub shim.ChaincodeStubInterface, args string) pb.Response 
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
-func replyPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) replyPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		senderID          string
 		receiverID        string
@@ -549,12 +551,87 @@ func replyPermession(stub shim.ChaincodeStubInterface, args string) pb.Response 
 	return shim.Success(nil)
 }
 
-func queryModifyRecord(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (c *chaincodeImpl) queryModifyRecord(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		userID   string
+		infoType string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "select modified_time from user_" + m.infoType
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(convertSQLResultToJSON(sqlResult))
+}
+
+func (c *chaincodeImpl) queryModifyRecordByTime(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		userID       string
+		infoType     string
+		modifiedTime string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "select * from user_" + m.infoType + "_history where user_id = " +
+		m.userID + " and modified_time = " + m.modifiedTime
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(convertSQLResultToJSON(sqlResult))
+}
+
+func (c *chaincodeImpl) measureCredit(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		senderID   string
+		receiverID string
+		general    string
+		photo      string
+		education  string
+		occupation string
+		impression string
+		other      string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	createdTime := time.Now().Format(timestampFormat)
+	sqlStr := "insert into date_measure (sender_id, receiver_id, general, photo, " +
+		"education, occupation, impression, other, created_time) values (" + m.senderID + ", " +
+		m.receiverID + ", " + m.general + ", " + m.photo + ", " + m.education + ", " +
+		m.occupation + ", " + m.impression + ", " + m.other + ", " + createdTime + ")"
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
 	return shim.Success(nil)
 }
 
-func measure(stub shim.ChaincodeStubInterface, args string) pb.Response {
-	return shim.Success(nil)
+func (c *chaincodeImpl) queryCredit(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		userID string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "select general, photo, education, occupation, impression, other, date_num from user_credit " +
+		"where user_id = " + m.userID
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
 func exchangeCreditValue(sender string, receiver string, value string, stub shim.ChaincodeStubInterface) error {
