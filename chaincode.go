@@ -17,9 +17,7 @@ var logger = shim.NewLogger("BloomFate")
 
 const timestampFormat = "20060102150405"
 
-type chaincodeImpl struct{}
-
-func (c *chaincodeImpl) register(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) register(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		username  string
 		password  string
@@ -45,7 +43,7 @@ func (c *chaincodeImpl) register(stub shim.ChaincodeStubInterface, args string) 
 	return shim.Success(nil)
 }
 
-func (c *chaincodeImpl) login(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) login(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		username string
 		password string
@@ -108,7 +106,7 @@ type occupationMessage struct {
 	signature    string
 }
 
-func (c *chaincodeImpl) uploadPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) uploadPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		basic      basicMessage
 		education  educationMessage
@@ -136,7 +134,7 @@ func (c *chaincodeImpl) uploadPersonalInfo(stub shim.ChaincodeStubInterface, arg
 	return shim.Success(nil)
 }
 
-func (c *chaincodeImpl) queryPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) queryPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID string
 	}
@@ -220,7 +218,7 @@ func (c *chaincodeImpl) queryPersonalInfo(stub shim.ChaincodeStubInterface, args
 	return shim.Success(resBytes)
 }
 
-func (c *chaincodeImpl) queryPersonList(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) queryPersonList(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		ageStart string
 		ageEnd   string
@@ -273,7 +271,7 @@ func (c *chaincodeImpl) queryPersonList(stub shim.ChaincodeStubInterface, args s
 	return shim.Success(resBytes)
 }
 
-func (c *chaincodeImpl) modifyPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) modifyPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID       string
 		infoType     string
@@ -302,7 +300,7 @@ func (c *chaincodeImpl) modifyPersonalInfo(stub shim.ChaincodeStubInterface, arg
 	return shim.Success(nil)
 }
 
-func (c *chaincodeImpl) sendDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) sendDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		senderID   string
 		receiverID string
@@ -326,7 +324,7 @@ func (c *chaincodeImpl) sendDate(stub shim.ChaincodeStubInterface, args string) 
 	return shim.Success(nil)
 }
 
-func (c *chaincodeImpl) queryDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) queryDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userType string
 		userID   string
@@ -374,7 +372,7 @@ func convertSQLResultToJSON(sqlResult [][]string) []byte {
 	return buf.Bytes()
 }
 
-func (c *chaincodeImpl) replyDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) replyDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		senderID   string
 		reveiverID string
@@ -393,7 +391,7 @@ func (c *chaincodeImpl) replyDate(stub shim.ChaincodeStubInterface, args string)
 	return shim.Success(nil)
 }
 
-func (c *chaincodeImpl) confirmDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) confirmDate(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		senderID   string
 		reveiverID string
@@ -429,7 +427,7 @@ func (c *chaincodeImpl) confirmDate(stub shim.ChaincodeStubInterface, args strin
 	return shim.Success(nil)
 }
 
-func (c *chaincodeImpl) like(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) like(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID  string
 		likerID string
@@ -448,7 +446,7 @@ func (c *chaincodeImpl) like(stub shim.ChaincodeStubInterface, args string) pb.R
 	return shim.Success(nil)
 }
 
-func (c *chaincodeImpl) unlike(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) unlike(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID  string
 		likerID string
@@ -465,7 +463,7 @@ func (c *chaincodeImpl) unlike(stub shim.ChaincodeStubInterface, args string) pb
 	return shim.Success(nil)
 }
 
-func (c *chaincodeImpl) queryLikeList(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) queryLikeList(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID string
 	}
@@ -482,7 +480,7 @@ func (c *chaincodeImpl) queryLikeList(stub shim.ChaincodeStubInterface, args str
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
-func (c *chaincodeImpl) sendPermission(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) sendPermission(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		senderID          string
 		receiverID        string
@@ -505,7 +503,7 @@ func (c *chaincodeImpl) sendPermission(stub shim.ChaincodeStubInterface, args st
 	return shim.Success(nil)
 }
 
-func (c *chaincodeImpl) queryPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) queryPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userType string
 		userID   string
@@ -528,7 +526,7 @@ func (c *chaincodeImpl) queryPermession(stub shim.ChaincodeStubInterface, args s
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
-func (c *chaincodeImpl) replyPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) replyPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		senderID          string
 		receiverID        string
@@ -551,7 +549,7 @@ func (c *chaincodeImpl) replyPermession(stub shim.ChaincodeStubInterface, args s
 	return shim.Success(nil)
 }
 
-func (c *chaincodeImpl) queryModifyRecord(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) queryModifyRecord(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID   string
 		infoType string
@@ -569,7 +567,7 @@ func (c *chaincodeImpl) queryModifyRecord(stub shim.ChaincodeStubInterface, args
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
-func (c *chaincodeImpl) queryModifyRecordByTime(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) queryModifyRecordByTime(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID       string
 		infoType     string
@@ -589,7 +587,7 @@ func (c *chaincodeImpl) queryModifyRecordByTime(stub shim.ChaincodeStubInterface
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
-func (c *chaincodeImpl) measureCredit(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) measureCredit(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		senderID   string
 		receiverID string
@@ -616,7 +614,7 @@ func (c *chaincodeImpl) measureCredit(stub shim.ChaincodeStubInterface, args str
 	return shim.Success(nil)
 }
 
-func (c *chaincodeImpl) queryCredit(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) queryCredit(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		userID string
 	}
