@@ -23,7 +23,7 @@
         "user_basic": {
             "user_id": "VARCHAR(64)",
             "name": "VARCHAR(10)",
-            "age": "TINYINT",
+            "age": "VARCHAR(6)",
             "sex": "VARCHAR(5)",
             "location": "VARCHAR(50)",
             "photo_hash": "VARCHAR(64)",

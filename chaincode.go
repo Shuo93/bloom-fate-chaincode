@@ -19,6 +19,7 @@ var logger = shim.NewLogger("BloomFate")
 const timestampFormat = "20060102150405"
 
 func (cc *BloomFateChaincode) register(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	logger.Infof("JSON: %s", args)
 	type message struct {
 		Username  string
 		Password  string
@@ -29,15 +30,17 @@ func (cc *BloomFateChaincode) register(stub shim.ChaincodeStubInterface, args st
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
+	logger.Infof("user_name = %s, password = %s", m.Username, m.Password)
 	hashBytes := sha256.Sum256([]byte(m.Username))
 	userID := hex.EncodeToString(hashBytes[:])
 	hashBytes = sha256.Sum256([]byte(m.Password))
 	password := hex.EncodeToString(hashBytes[:])
+	logger.Infof("user_id = %s, password_hash = %s", userID, password)
 	initValue := "50"
 	createdTime := time.Now().Format("20060102150405")
 	sqlStr := "insert into account (user_id, user_name, password, credit_value, public_key, created_time) " +
-		"values (" + userID + ", " + m.Username + ", " + password +
-		", " + initValue + ", " + m.PublicKey + ", " + createdTime + ")"
+		"values (‘" + userID + "’, ‘" + m.Username + "’, ‘" + password +
+		"’, " + initValue + ", ‘" + m.PublicKey + "’, ‘" + createdTime + "’)"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
@@ -58,8 +61,8 @@ func (cc *BloomFateChaincode) login(stub shim.ChaincodeStubInterface, args strin
 	userID := hex.EncodeToString(hashBytes[:])
 	hashBytes = sha256.Sum256([]byte(m.Password))
 	password := hex.EncodeToString(hashBytes[:])
-	sqlStr := "select count(user_id) from account where name_id = " +
-		userID + " and password = " + password
+	sqlStr := "select count(user_id) from account where user_id = '" +
+		userID + "' and password = '" + password + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -120,15 +123,15 @@ func (cc *BloomFateChaincode) uploadPersonalInfo(stub shim.ChaincodeStubInterfac
 	}
 	modifiedTime := time.Now().Format("20060102150405")
 	sqlStr := "insert into user_basic (user_id, name, age, sex, location, photo_hash, photo_format, " +
-		"phone, email, modified_time) values (" + m.Basic.UserID + ", " + m.Basic.Name + ", " +
-		m.Basic.Age + ", " + m.Basic.Sex + ", " + m.Basic.PhotoHash + ", " +
-		m.Basic.PhotoFormat + ", " + m.Basic.Phone + ", " + m.Basic.Email + ", " + modifiedTime + ")"
+		"phone, email, modified_time) values ('" + m.Basic.UserID + "', '" + m.Basic.Name + "', '" +
+		m.Basic.Age + "', '" + m.Basic.Sex + "', '" + m.Basic.PhotoHash + "', '" +
+		m.Basic.PhotoFormat + "', '" + m.Basic.Phone + "', '" + m.Basic.Email + "', '" + modifiedTime + "')"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
 
 	sqlStr = "insert into user_credit (user_id, general, photo, education, occupation, impression, )" +
-		"other, date_num) values (" + m.Basic.UserID + ", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0"
+		"other, date_num) values ('" + m.Basic.UserID + "', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
@@ -146,7 +149,7 @@ func (cc *BloomFateChaincode) queryPersonalInfo(stub shim.ChaincodeStubInterface
 	}
 
 	sqlStr := "select name, age, sex, location, photo_hash, photo_format, phone, email " +
-		"from user_basic where user_id = " + m.UserID
+		"from user_basic where user_id = '" + m.UserID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -169,7 +172,7 @@ func (cc *BloomFateChaincode) queryPersonalInfo(stub shim.ChaincodeStubInterface
 		sqlResult[1][7]}
 
 	sqlStr = "select degree, school, encrypted_key, signature " +
-		"from user_education where user_id = " + m.UserID
+		"from user_education where user_id = '" + m.UserID + "'"
 
 	sqlResult, err = queryBySQL(stub, sqlStr)
 	if err != nil {
@@ -188,7 +191,7 @@ func (cc *BloomFateChaincode) queryPersonalInfo(stub shim.ChaincodeStubInterface
 		sqlResult[1][3]}
 
 	sqlStr = "select company, job, salary, encrypted_key, signature " +
-		"from user_occupation where user_id = " + m.UserID
+		"from user_occupation where user_id = '" + m.UserID + "'"
 	sqlResult, err = queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -234,13 +237,13 @@ func (cc *BloomFateChaincode) queryPersonList(stub shim.ChaincodeStubInterface, 
 	sqlStr := "select user_id, name, age, sex, location, " +
 		"photo_hash, photo_format, phone, email from user_basic"
 	if m.Sex != "" {
-		sqlStr += " where sex = " + m.Sex
+		sqlStr += " where sex = '" + m.Sex + "'"
 	}
 	if m.Location != "" {
-		sqlStr += " and location = " + m.Location
+		sqlStr += " and location = '" + m.Location + "'"
 	}
 	if m.AgeStart != "" && m.AgeEnd != "" {
-		sqlStr += " and age between " + m.AgeStart + " and " + m.AgeEnd
+		sqlStr += " and age between '" + m.AgeStart + "' and '" + m.AgeEnd + "'"
 	}
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
@@ -289,11 +292,11 @@ func (cc *BloomFateChaincode) modifyPersonalInfo(stub shim.ChaincodeStubInterfac
 	modifiedTime := time.Now().Format("20060102150405")
 	var sqlStr string
 	if m.EncryptedKey == "" || m.Signature == "" {
-		sqlStr = "insert into user_" + m.InfoType + " (user_id, " + m.Feild + ", modified_time) values (" +
-			m.UserID + ", " + m.Value + ", " + modifiedTime + ")"
+		sqlStr = "insert into user_" + m.InfoType + " (user_id, " + m.Feild + ", modified_time) values ('" +
+			m.UserID + "', '" + m.Value + "', '" + modifiedTime + "')"
 	} else {
-		sqlStr = "insert into user_" + m.InfoType + " (user_id, " + m.Feild + ", encrypted_key, signature, modified_time) values (" +
-			m.UserID + ", " + m.Value + ", " + m.EncryptedKey + ", " + m.Signature + ", " + modifiedTime + ")"
+		sqlStr = "insert into user_" + m.InfoType + " (user_id, " + m.Feild + ", encrypted_key, signature, modified_time) values ('" +
+			m.UserID + "', '" + m.Value + "', '" + m.EncryptedKey + "', '" + m.Signature + "', '" + modifiedTime + "')"
 	}
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
@@ -317,8 +320,8 @@ func (cc *BloomFateChaincode) sendDate(stub shim.ChaincodeStubInterface, args st
 	status := "pending"
 	sendTime := time.Now().Format("20060102150405")
 	sqlStr := "insert into date_list (sender_id, receiver_id, location, " +
-		"date_time, message, status, send_time) values (" + m.SenderID + ", " + m.ReceiverID +
-		", " + m.Location + ", " + m.DateTime + ", " + m.Message + ", " + status + ", " + sendTime + ")"
+		"date_time, message, status, send_time) values ('" + m.SenderID + "', '" + m.ReceiverID +
+		"', '" + m.Location + "', '" + m.DateTime + "', '" + m.Message + "', '" + status + "', '" + sendTime + "')"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
@@ -336,9 +339,9 @@ func (cc *BloomFateChaincode) queryDate(stub shim.ChaincodeStubInterface, args s
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr := "select sender_id, receiver_id, location, date_time, message, status, send_time, confirm_time from date_list where " + m.UserType + " = " + m.UserID
+	sqlStr := "select sender_id, receiver_id, location, date_time, message, status, send_time, confirm_time from date_list where " + m.UserType + " = '" + m.UserID + "'"
 	if m.Status != "" {
-		sqlStr += " and status = " + m.Status
+		sqlStr += " and status = '" + m.Status + "'"
 	}
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
@@ -384,8 +387,8 @@ func (cc *BloomFateChaincode) replyDate(stub shim.ChaincodeStubInterface, args s
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr := "insert into date_list (sender_id, receiver_id, status) values (" +
-		m.SenderID + ", " + m.ReveiverID + ", " + m.Status + ")"
+	sqlStr := "insert into date_list (sender_id, receiver_id, status) values ('" +
+		m.SenderID + "', '" + m.ReveiverID + "', '" + m.Status + "')"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
@@ -403,8 +406,8 @@ func (cc *BloomFateChaincode) confirmDate(stub shim.ChaincodeStubInterface, args
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr := "select status from date_list where sender_id = " +
-		m.SenderID + " and receiver_id = " + m.ReveiverID
+	sqlStr := "select status from date_list where sender_id = '" +
+		m.SenderID + "' and receiver_id = '" + m.ReveiverID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -415,12 +418,12 @@ func (cc *BloomFateChaincode) confirmDate(stub shim.ChaincodeStubInterface, args
 	}
 	if status == "approve" {
 		sqlStr = "insert into date_list (sender_id, receiver_id, status)" +
-			" values (" + m.SenderID + ", " + m.ReveiverID + ", " + "confirm" + ")"
+			" values ('" + m.SenderID + "', '" + m.ReveiverID + "', 'confirm')"
 	}
 	if status == "confirm" {
 		confirmTime := time.Now().Format("20060102150405")
 		sqlStr = "insert into date_list (sender_id, receiver_id, status, confirm_time)" +
-			" values (" + m.SenderID + ", " + m.ReveiverID + ", " + "confirmed" + ", " + confirmTime + ")"
+			" values ('" + m.SenderID + "', '" + m.ReveiverID + "', 'confirmed', '" + confirmTime + "')"
 	}
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
@@ -439,8 +442,8 @@ func (cc *BloomFateChaincode) like(stub shim.ChaincodeStubInterface, args string
 		return shim.Error(err.Error())
 	}
 	createdTime := time.Now().Format("20060102150405")
-	sqlStr := "insert into like_list (user_id, liker_id, created_time) values (" +
-		m.UserID + ", " + m.LikerID + ", " + createdTime + ")"
+	sqlStr := "insert into like_list (user_id, liker_id, created_time) values ('" +
+		m.UserID + "', '" + m.LikerID + "', '" + createdTime + "')"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
@@ -457,7 +460,7 @@ func (cc *BloomFateChaincode) unlike(stub shim.ChaincodeStubInterface, args stri
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr := "delete from like_list where user_id = " + m.UserID + " and liker_id = " + m.LikerID
+	sqlStr := "delete from like_list where user_id = '" + m.UserID + "' and liker_id = '" + m.LikerID + "'"
 	if err := deleteBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
@@ -473,7 +476,7 @@ func (cc *BloomFateChaincode) queryLikeList(stub shim.ChaincodeStubInterface, ar
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr := "select liker_id, created_time from like_list where user_id = " + m.UserID
+	sqlStr := "select liker_id, created_time from like_list where user_id = '" + m.UserID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -496,8 +499,8 @@ func (cc *BloomFateChaincode) sendPermission(stub shim.ChaincodeStubInterface, a
 	sendTime := time.Now().Format(timestampFormat)
 	status := "pending"
 	sqlStr := "insert into permission (send_id, receiver_id, permission_type, permission_content, " +
-		"status, send_time) values (" + m.SenderID + ", " + m.ReceiverID + ", " + m.PermissionType +
-		", " + m.PermissionContent + ", " + status + ", " + sendTime + ")"
+		"status, send_time) values ('" + m.SenderID + "', '" + m.ReceiverID + "', '" + m.PermissionType +
+		"', '" + m.PermissionContent + "', '" + status + "', '" + sendTime + "')"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
@@ -516,9 +519,9 @@ func (cc *BloomFateChaincode) queryPermession(stub shim.ChaincodeStubInterface, 
 		return shim.Error(err.Error())
 	}
 	sqlStr := "select sender_id, receiver_id, permission_type, permission_content," +
-		" status, encrypted_key, send_time from permission where " + m.UserType + " = " + m.UserID
+		" status, encrypted_key, send_time from permission where " + m.UserType + " = '" + m.UserID + "'"
 	if m.Status != "" {
-		sqlStr += " and status = " + m.Status
+		sqlStr += " and status = '" + m.Status + "'"
 	}
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
@@ -542,8 +545,8 @@ func (cc *BloomFateChaincode) replyPermession(stub shim.ChaincodeStubInterface, 
 	}
 	confirmTime := time.Now().Format(timestampFormat)
 	sqlStr := "insert into permission (sender_id, receiver_id, permission_content," +
-		" status, encrypted_key, confirm_time) values (" + m.SenderID + ", " + m.ReceiverID + ", " +
-		m.PermissionContent + ", " + m.Status + ", " + m.EncryptedKey + ", " + confirmTime + ")"
+		" status, encrypted_key, confirm_time) values ('" + m.SenderID + "', '" + m.ReceiverID + "', '" +
+		m.PermissionContent + "', '" + m.Status + "', '" + m.EncryptedKey + "', '" + confirmTime + "')"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
@@ -560,7 +563,7 @@ func (cc *BloomFateChaincode) queryModifyRecord(stub shim.ChaincodeStubInterface
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr := "select modified_time from user_" + m.InfoType + "where user_id = " + m.UserID 
+	sqlStr := "select modified_time from user_" + m.InfoType + "where user_id = '" + m.UserID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -579,8 +582,8 @@ func (cc *BloomFateChaincode) queryModifyRecordByTime(stub shim.ChaincodeStubInt
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr := "select * from user_" + m.InfoType + "_history where user_id = " +
-		m.UserID + " and modified_time = " + m.ModifiedTime
+	sqlStr := "select * from user_" + m.InfoType + "_history where user_id = '" +
+		m.UserID + "' and modified_time = '" + m.ModifiedTime + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -606,9 +609,9 @@ func (cc *BloomFateChaincode) measureCredit(stub shim.ChaincodeStubInterface, ar
 	}
 	createdTime := time.Now().Format(timestampFormat)
 	sqlStr := "insert into date_measure (sender_id, receiver_id, general, photo, " +
-		"education, occupation, impression, other, created_time) values (" + m.SenderID + ", " +
-		m.ReceiverID + ", " + m.General + ", " + m.Photo + ", " + m.Education + ", " +
-		m.Occupation + ", " + m.Impression + ", " + m.Other + ", " + createdTime + ")"
+		"education, occupation, impression, other, created_time) values ('" + m.SenderID + "', '" +
+		m.ReceiverID + "', " + m.General + ", " + m.Photo + ", " + m.Education + ", " +
+		m.Occupation + ", " + m.Impression + ", " + m.Other + ", '" + createdTime + "')"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
@@ -625,7 +628,7 @@ func (cc *BloomFateChaincode) queryCredit(stub shim.ChaincodeStubInterface, args
 		return shim.Error(err.Error())
 	}
 	sqlStr := "select general, photo, education, occupation, impression, other, date_num from user_credit " +
-		"where user_id = " + m.UserID
+		"where user_id = '" + m.UserID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -665,8 +668,8 @@ func subtractCreditValue(userID string, valueStr string, stub shim.ChaincodeStub
 }
 
 func changeCreditValue(userID string, balance float64, stub shim.ChaincodeStubInterface) error {
-	sqlStr := "insert into account (user_id, credit_value) values (" + userID +
-		", " + fmt.Sprintf("%.1f", balance) + ")"
+	sqlStr := "insert into account (user_id, credit_value) values ('" + userID +
+		"', " + fmt.Sprintf("%.1f", balance) + ")"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return err
 	}
@@ -678,7 +681,7 @@ func getBalanceAndValue(userID string, valueStr string, stub shim.ChaincodeStubI
 	if err != nil {
 		return 0, 0, err
 	}
-	sqlStr := "select credit_value from account where user_id = " + userID
+	sqlStr := "select credit_value from account where user_id = '" + userID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return 0, value, err
@@ -691,19 +694,28 @@ func getBalanceAndValue(userID string, valueStr string, stub shim.ChaincodeStubI
 }
 
 func invokeBySQL(stub shim.ChaincodeStubInterface, sqlStr string) error {
-	logger.Infof("execute sql: %s" + sqlStr)
-	return stub.PutStateBySql(sqlStr)
+	logger.Infof("execute sql: %s", sqlStr)
+	if err := stub.PutStateBySql(sqlStr); err != nil {
+		logger.Error(err.Error())
+		return err
+	}
+	return nil
 }
 
 func deleteBySQL(stub shim.ChaincodeStubInterface, sqlStr string) error {
-	logger.Infof("execute sql: %s" + sqlStr)
-	return stub.DeleteStateBySql(sqlStr)
+	logger.Infof("execute sql: %s", sqlStr)
+	if err := stub.DeleteStateBySql(sqlStr); err != nil {
+		logger.Error(err.Error())
+		return err
+	}
+	return nil
 }
 
 func queryBySQL(stub shim.ChaincodeStubInterface, sqlStr string) ([][]string, error) {
-	logger.Infof("execute sql: %s" + sqlStr)
+	logger.Infof("execute sql: %s", sqlStr)
 	sqlResult, err := stub.GetStateBySql(sqlStr)
 	if err != nil {
+		logger.Error(err.Error())
 		return nil, err
 	}
 	logger.Infof("execute sql success")
