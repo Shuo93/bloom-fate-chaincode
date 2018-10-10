@@ -2,10 +2,10 @@
     "schemaName": "fatecc",
     "schemaTables": {
         "account": {
-            "user_id": "VARCHAR(32)",
+            "user_id": "VARCHAR(64)",
             "user_name": "VARCHAR(20)",
-            "password": "VARCHAR(32)",
-            "credit_value": "DECIMAL(2,1)",
+            "password": "VARCHAR(64)",
+            "credit_value": "DECIMAL(5,1)",
             "public_key": "VARCHAR(100)",
             "created_time": "VARCHAR(14)",
             "COLUMN ORDER": [
@@ -21,12 +21,12 @@
             ]
         },
         "user_basic": {
-            "user_id": "VARCHAR(32)",
+            "user_id": "VARCHAR(64)",
             "name": "VARCHAR(10)",
             "age": "TINYINT",
             "sex": "VARCHAR(5)",
             "location": "VARCHAR(50)",
-            "photo_hash": "VARCHAR(32)",
+            "photo_hash": "VARCHAR(64)",
             "photo_format": "VARCHAR(10)",
             "phone": "VARCHAR(20)",
             "email": "VARCHAR(20)",
@@ -52,8 +52,8 @@
             ]
         },
         "user_gallery": {
-            "hash": "VARCHAR(32)",
-            "user_id": "VARCHAR(32)",
+            "hash": "VARCHAR(64)",
+            "user_id": "VARCHAR(64)",
             "format": "VARCHAR(10)",
             "encrypted_key": "VARCHAR(100)",
             "signature": "VARCHAR(100)",
@@ -71,7 +71,7 @@
             ]
         },
         "user_education": {
-            "user_id": "VARCHAR(32)",
+            "user_id": "VARCHAR(64)",
             "degree": "VARCHAR(20)",
             "school": "VARCHAR(100)",
             "encrypted_key": "VARCHAR(100)",
@@ -90,7 +90,7 @@
             ]
         },
         "user_occupation": {
-            "user_id": "VARCHAR(32)",
+            "user_id": "VARCHAR(64)",
             "company": "VARCHAR(50)",
             "job": "VARCHAR(20)",
             "salary": "VARCHAR(100)",
@@ -111,7 +111,7 @@
             ]
         },
         "user_credit": {
-            "user_id": "VARCHAR(32)",
+            "user_id": "VARCHAR(64)",
             "general": "DECIMAL(2,1)",
             "photo": "DECIMAL(2,1)",
             "education": "DECIMAL(2,1)",
@@ -134,8 +134,8 @@
             ]
         },
         "date_measure": {
-            "sender_id": "VARCHAR(32)",
-            "receiver_id": "VARCHAR(32)",
+            "sender_id": "VARCHAR(64)",
+            "receiver_id": "VARCHAR(64)",
             "general": "TINYINT",
             "photo": "TINYINT",
             "education": "TINYINT",
@@ -160,8 +160,8 @@
             ]
         },
         "date_list": {
-            "sender_id": "VARCHAR(32)",
-            "receiver_id": "VARCHAR(32)",
+            "sender_id": "VARCHAR(64)",
+            "receiver_id": "VARCHAR(64)",
             "location": "VARCHAR(20)",
             "date_time": "VARCHAR(14)",
             "message": "VARCHAR(100)",
@@ -184,8 +184,8 @@
             ]
         },
         "permission": {
-            "sender_id": "VARCHAR(32)",
-            "receiver_id": "VARCHAR(32)",
+            "sender_id": "VARCHAR(64)",
+            "receiver_id": "VARCHAR(64)",
             "permission_type": "VARCHAR(50)",
             "permission_content": "VARCHAR(50)",
             "status": "VARCHAR(10)",
@@ -209,8 +209,8 @@
             ]
         },
         "like_list": {
-            "user_id": "VARCHAR(32)",
-            "liker_id": "VARCHAR(32)",
+            "user_id": "VARCHAR(64)",
+            "liker_id": "VARCHAR(64)",
             "created_time": "VARCHAR(14)",
             "COLUMN ORDER": [
                 "user_id",
