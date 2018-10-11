@@ -32,6 +32,7 @@
             "email": "VARCHAR(20)",
             "encrypted_key": "VARCHAR(100)",
             "signature": "VARCHAR(100)",
+            "introduction": "VARCHAR(100)",
             "modified_time": "VARCHAR(14)",
             "COLUMN ORDER": [
                 "user_id",
@@ -45,6 +46,7 @@
                 "email",
                 "encrypted_key",
                 "signature",
+                "introduction",
                 "modified_time"
             ],
             "PRIMARY KEY": [
@@ -134,6 +136,8 @@
             ]
         },
         "date_measure": {
+            "sendername": "VARCHAR(20)",
+            "receivername": "VARCHAR(20)",
             "sender_id": "VARCHAR(64)",
             "receiver_id": "VARCHAR(64)",
             "general": "TINYINT",
@@ -144,6 +148,8 @@
             "other": "TINYINT",
             "created_time": "VARCHAR(14)",
             "COLUMN ORDER": [
+                "sendername",
+                "receivername",
                 "sender_id",
                 "receiver_id",
                 "general",
@@ -160,6 +166,8 @@
             ]
         },
         "date_list": {
+            "sendername": "VARCHAR(20)",
+            "receivername": "VARCHAR(20)",
             "sender_id": "VARCHAR(64)",
             "receiver_id": "VARCHAR(64)",
             "location": "VARCHAR(20)",
@@ -169,6 +177,8 @@
             "send_time": "VARCHAR(14)",
             "confirm_time": "VARCHAR(14)",
             "COLUMN ORDER": [
+                "sendername",
+                "receivername",
                 "sender_id",
                 "receiver_id",
                 "location",
@@ -184,6 +194,8 @@
             ]
         },
         "permission": {
+            "sendername": "VARCHAR(20)",
+            "receivername": "VARCHAR(20)",
             "sender_id": "VARCHAR(64)",
             "receiver_id": "VARCHAR(64)",
             "permission_type": "VARCHAR(50)",
@@ -193,6 +205,8 @@
             "send_time": "VARCHAR(14)",
             "confirm_time": "VARCHAR(14)",
             "COLUMN ORDER": [
+                "sendername",
+                "receivername",
                 "sender_id",
                 "receiver_id",
                 "permission_type",
@@ -209,10 +223,14 @@
             ]
         },
         "like_list": {
+            "username": "VARCHAR(20)",
+            "likername": "VARCHAR(20)",
             "user_id": "VARCHAR(64)",
             "liker_id": "VARCHAR(64)",
             "created_time": "VARCHAR(14)",
             "COLUMN ORDER": [
+                "username",
+                "likername",
                 "user_id",
                 "liker_id",
                 "created_time"
