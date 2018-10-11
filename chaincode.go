@@ -155,7 +155,7 @@ func (cc *BloomFateChaincode) queryPersonalInfo(stub shim.ChaincodeStubInterface
 		return shim.Error(err.Error())
 	}
 	if len(sqlResult) < 2 {
-		return shim.Error("Error, no data for the user")
+		return shim.Success([]byte("no data"))
 	}
 	if len(sqlResult) > 2 {
 		return shim.Error("Error, redundant data for the user")
@@ -248,9 +248,6 @@ func (cc *BloomFateChaincode) queryPersonList(stub shim.ChaincodeStubInterface, 
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
-	}
-	if len(sqlResult) < 2 {
-		return shim.Error("Error, no data for the user")
 	}
 
 	size := len(sqlResult) - 1
