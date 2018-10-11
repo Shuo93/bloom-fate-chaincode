@@ -1,9 +1,9 @@
 package main
 
 import (
-	"encoding/hex"
 	"bytes"
 	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -84,19 +84,19 @@ func (cc *BloomFateChaincode) login(stub shim.ChaincodeStubInterface, args strin
 }
 
 type basicMessage struct {
-	UserID      string
-	Name        string
-	Age         string
-	Sex         string
-	Location    string
-	PhotoHash   string
-	PhotoFormat string
-	Phone       string
-	Email       string
+	UserID      string `json:"userId"`
+	Name        string `json:"name"`
+	Age         string `json:"age"`
+	Sex         string `json:"sex"`
+	Location    string `json:"location"`
+	PhotoHash   string `json:"photoHash"`
+	PhotoFormat string `json:"photoFormat"`
+	Phone       string `json:"phone"`
+	Email       string `json:"email"`
 }
 
 type educationMessage struct {
-	Degree       string
+	Degree       string 
 	School       string
 	EncryptedKey string
 	Signature    string
