@@ -96,18 +96,18 @@ type basicMessage struct {
 }
 
 type educationMessage struct {
-	Degree       string 
-	School       string
-	EncryptedKey string
-	Signature    string
+	Degree       string `json:"degree"`
+	School       string `json:"school"`
+	EncryptedKey string `json:"encryptedKey"`
+	Signature    string `json:"signature"`
 }
 
 type occupationMessage struct {
-	Company      string
-	Job          string
-	Salary       string
-	EncryptedKey string
-	Signature    string
+	Company      string `json:"company"`
+	Job          string `json:"job"`
+	Salary       string `json:"salary"`
+	EncryptedKey string `json:"encryptedKey"`
+	Signature    string `json:"signature"`
 }
 
 func (cc *BloomFateChaincode) uploadPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
