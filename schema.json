@@ -24,7 +24,7 @@
             "user_id": "VARCHAR(64)",
             "name": "VARCHAR(10)",
             "age": "VARCHAR(6)",
-            "sex": "VARCHAR(5)",
+            "sex": "VARCHAR(6)",
             "location": "VARCHAR(50)",
             "photo_hash": "VARCHAR(64)",
             "photo_format": "VARCHAR(10)",
