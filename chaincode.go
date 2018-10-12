@@ -113,6 +113,7 @@ type occupationMessage struct {
 }
 
 func (cc *BloomFateChaincode) uploadPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	logger.Infof("JSON: %s", args)
 	type message struct {
 		Basic      basicMessage
 		Education  educationMessage
@@ -132,8 +133,8 @@ func (cc *BloomFateChaincode) uploadPersonalInfo(stub shim.ChaincodeStubInterfac
 		return shim.Error(err.Error())
 	}
 
-	sqlStr = "insert into user_credit (user_id, general, photo, education, occupation, impression, )" +
-		"other, date_num) values (" + m.Basic.UserID + ", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0"
+	sqlStr = "insert into user_credit (user_id, general, photo, education, occupation, impression, " +
+		"other, date_num) values (" + m.Basic.UserID + ", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0)"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
