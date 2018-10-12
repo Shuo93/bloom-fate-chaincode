@@ -132,7 +132,12 @@ func (cc *BloomFateChaincode) uploadPersonalInfo(stub shim.ChaincodeStubInterfac
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
-
+	sqlStr = "insert into user_education (user_id, degree, school, encrypted_key, signature, modified_time) values (" + m.Basic.Introduction + 
+		", " + m.Education.Degree + ", " + m.Education.School + ", " + m.Education.EncryptedKey + ", " + m.Education.Signature + ", " + 
+		modifiedTime + ")"
+	if err := invokeBySQL(stub, sqlStr); err != nil {
+		return shim.Error(err.Error())
+	}
 	sqlStr = "insert into user_credit (user_id, general, photo, education, occupation, impression, " +
 		"other, date_num) values (" + m.Basic.UserID + ", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0)"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
