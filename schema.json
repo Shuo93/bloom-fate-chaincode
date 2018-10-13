@@ -136,8 +136,8 @@
             ]
         },
         "date_measure": {
-            "sendername": "VARCHAR(20)",
-            "receivername": "VARCHAR(20)",
+            "sender_name": "VARCHAR(20)",
+            "receiver_name": "VARCHAR(20)",
             "sender_id": "VARCHAR(64)",
             "receiver_id": "VARCHAR(64)",
             "general": "TINYINT",
@@ -148,8 +148,8 @@
             "other": "TINYINT",
             "created_time": "VARCHAR(14)",
             "COLUMN ORDER": [
-                "sendername",
-                "receivername",
+                "sender_name",
+                "receiver_name",
                 "sender_id",
                 "receiver_id",
                 "general",
@@ -166,8 +166,8 @@
             ]
         },
         "date_list": {
-            "sendername": "VARCHAR(20)",
-            "receivername": "VARCHAR(20)",
+            "sender_name": "VARCHAR(20)",
+            "receiver_name": "VARCHAR(20)",
             "sender_id": "VARCHAR(64)",
             "receiver_id": "VARCHAR(64)",
             "location": "VARCHAR(20)",
@@ -177,8 +177,8 @@
             "send_time": "VARCHAR(14)",
             "confirm_time": "VARCHAR(14)",
             "COLUMN ORDER": [
-                "sendername",
-                "receivername",
+                "sender_name",
+                "receiver_name",
                 "sender_id",
                 "receiver_id",
                 "location",
@@ -194,8 +194,8 @@
             ]
         },
         "permission": {
-            "sendername": "VARCHAR(20)",
-            "receivername": "VARCHAR(20)",
+            "sender_name": "VARCHAR(20)",
+            "receiver_name": "VARCHAR(20)",
             "sender_id": "VARCHAR(64)",
             "receiver_id": "VARCHAR(64)",
             "permission_type": "VARCHAR(50)",
@@ -205,8 +205,8 @@
             "send_time": "VARCHAR(14)",
             "confirm_time": "VARCHAR(14)",
             "COLUMN ORDER": [
-                "sendername",
-                "receivername",
+                "sender_name",
+                "receiver_name",
                 "sender_id",
                 "receiver_id",
                 "permission_type",

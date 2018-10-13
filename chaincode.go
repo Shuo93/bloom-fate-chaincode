@@ -377,7 +377,7 @@ func (cc *BloomFateChaincode) sendDate(stub shim.ChaincodeStubInterface, args st
 		return shim.Error(err.Error())
 	}
 	receiverName := sqlResult[1][0]
-	sqlStr = "insert into date_list (sendername, receivername, sender_id, receiver_id, location, " +
+	sqlStr = "insert into date_list (sender_name, receiver_name, sender_id, receiver_id, location, " +
 		"date_time, message, status, send_time) values (" + senderName + ", " + receiverName + ", " + m.SenderID + ", " +
 		m.ReceiverID + ", " + m.Location + ", " + m.DateTime + ", " + m.Message + ", " + status + ", " + sendTime + ")"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
@@ -398,7 +398,7 @@ func (cc *BloomFateChaincode) queryDate(stub shim.ChaincodeStubInterface, args s
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr := "select sendername, receivername, sender_id, receiver_id, location, date_time, message, status, send_time, confirm_time from date_list where " + m.UserType + " = '" + m.UserID + "'"
+	sqlStr := "select sender_name, receiver_name, sender_id, receiver_id, location, date_time, message, status, send_time, confirm_time from date_list where " + m.UserType + " = '" + m.UserID + "'"
 	if m.Status != "" {
 		sqlStr += " and status = '" + m.Status + "'"
 	}
@@ -602,7 +602,7 @@ func (cc *BloomFateChaincode) sendPermission(stub shim.ChaincodeStubInterface, a
 		return shim.Error(err.Error())
 	}
 	receiverName := sqlResult[1][0]
-	sqlStr = "insert into permission (sendername, receivername, send_id, receiver_id, permission_type, permission_content, " +
+	sqlStr = "insert into permission (sender_name, receiver_name, send_id, receiver_id, permission_type, permission_content, " +
 		"status, send_time) values (" + senderName + ", " + receiverName + ", " + m.SenderID + ", " +
 		m.ReceiverID + ", " + m.PermissionType + ", " + m.PermissionContent + ", " + status + ", " + sendTime + ")"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
@@ -623,7 +623,7 @@ func (cc *BloomFateChaincode) queryPermession(stub shim.ChaincodeStubInterface, 
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr := "select sendername, receivername, sender_id, receiver_id, permission_type, permission_content," +
+	sqlStr := "select sender_name, receiver_name, sender_id, receiver_id, permission_type, permission_content," +
 		" status, encrypted_key, send_time from permission where " + m.UserType + " = '" + m.UserID + "'"
 	if m.Status != "" {
 		sqlStr += " and status = '" + m.Status + "'"
@@ -740,7 +740,7 @@ func (cc *BloomFateChaincode) measureCredit(stub shim.ChaincodeStubInterface, ar
 		return shim.Error(err.Error())
 	}
 	receiverName := sqlResult[1][0]
-	sqlStr = "insert into date_measure (sendername, receivername, sender_id, receiver_id, general, photo, " +
+	sqlStr = "insert into date_measure (sender_name, receiver_name, sender_id, receiver_id, general, photo, " +
 		"education, occupation, impression, other, created_time) values (" + senderName + ", " + receiverName + ", " +
 		m.SenderID + ", " + m.ReceiverID + ", " + m.General + ", " + m.Photo + ", " + m.Education + ", " +
 		m.Occupation + ", " + m.Impression + ", " + m.Other + ", " + createdTime + ")"
