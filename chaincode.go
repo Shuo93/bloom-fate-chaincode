@@ -406,6 +406,9 @@ func (cc *BloomFateChaincode) queryDate(stub shim.ChaincodeStubInterface, args s
 	if err != nil {
 		return shim.Error(err.Error())
 	}
+	if len(sqlResult) < 2 {
+		return shim.Success([]byte("no data"))
+	}
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
@@ -566,6 +569,9 @@ func (cc *BloomFateChaincode) queryLikeList(stub shim.ChaincodeStubInterface, ar
 	if err != nil {
 		return shim.Error(err.Error())
 	}
+	if len(sqlResult) < 2 {
+		return shim.Success([]byte("no data"))
+	}
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
@@ -626,6 +632,9 @@ func (cc *BloomFateChaincode) queryPermession(stub shim.ChaincodeStubInterface, 
 	if err != nil {
 		return shim.Error(err.Error())
 	}
+	if len(sqlResult) < 2 {
+		return shim.Success([]byte("no data"))
+	}
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
@@ -672,6 +681,9 @@ func (cc *BloomFateChaincode) queryModifyRecord(stub shim.ChaincodeStubInterface
 	if err != nil {
 		return shim.Error(err.Error())
 	}
+	if len(sqlResult) < 2 {
+		return shim.Success([]byte("no data"))
+	}
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
 
@@ -691,6 +703,9 @@ func (cc *BloomFateChaincode) queryModifyRecordByTime(stub shim.ChaincodeStubInt
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
+	}
+	if len(sqlResult) < 2 {
+		return shim.Success([]byte("no data"))
 	}
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
@@ -784,6 +799,9 @@ func (cc *BloomFateChaincode) queryCredit(stub shim.ChaincodeStubInterface, args
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
+	}
+	if len(sqlResult) < 2 {
+		return shim.Success([]byte("no data"))
 	}
 	return shim.Success(convertSQLResultToJSON(sqlResult))
 }
