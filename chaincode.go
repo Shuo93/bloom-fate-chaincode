@@ -528,7 +528,7 @@ func (cc *BloomFateChaincode) like(stub shim.ChaincodeStubInterface, args string
 		return shim.Error(err.Error())
 	}
 	likerName := sqlResult[1][0]
-	sqlStr = "insert into like_list (username, likername, user_id, liker_id, created_time) values (" +
+	sqlStr = "insert into like_list (user_name, liker_name, user_id, liker_id, created_time) values (" +
 		userName + ", " + likerName + ", " + m.UserID + ", " + m.LikerID + ", " + createdTime + ")"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
@@ -564,7 +564,7 @@ func (cc *BloomFateChaincode) queryLikeList(stub shim.ChaincodeStubInterface, ar
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr := "select username, likername, liker_id, created_time from like_list where user_id = '" + m.UserID + "'"
+	sqlStr := "select user_name, liker_name, liker_id, created_time from like_list where user_id = '" + m.UserID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())

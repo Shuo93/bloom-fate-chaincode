@@ -223,14 +223,14 @@
             ]
         },
         "like_list": {
-            "username": "VARCHAR(20)",
-            "likername": "VARCHAR(20)",
+            "user_name": "VARCHAR(20)",
+            "liker_name": "VARCHAR(20)",
             "user_id": "VARCHAR(64)",
             "liker_id": "VARCHAR(64)",
             "created_time": "VARCHAR(14)",
             "COLUMN ORDER": [
-                "username",
-                "likername",
+                "user_name",
+                "liker_name",
                 "user_id",
                 "liker_id",
                 "created_time"
