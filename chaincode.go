@@ -365,13 +365,13 @@ func (cc *BloomFateChaincode) sendDate(stub shim.ChaincodeStubInterface, args st
 	status := "pending"
 	sendTime := time.Now().Format("20060102150405")
 	// TODO:
-	sqlStr := "select user_name from account where user_id = '" + m.SenderID + "'"
+	sqlStr := "select name from user_basic where user_id = '" + m.SenderID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 	senderName := sqlResult[1][0]
-	sqlStr = "select user_name from account where user_id = '" + m.ReceiverID + "'"
+	sqlStr = "select name from user_basic where user_id = '" + m.ReceiverID + "'"
 	sqlResult, err = queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -516,13 +516,13 @@ func (cc *BloomFateChaincode) like(stub shim.ChaincodeStubInterface, args string
 	}
 	createdTime := time.Now().Format("20060102150405")
 	// TODO:
-	sqlStr := "select user_name from account where user_id = '" + m.UserID + "'"
+	sqlStr := "select name from user_basic where user_id = '" + m.UserID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 	userName := sqlResult[1][0]
-	sqlStr = "select user_name from account where user_id = '" + m.LikerID + "'"
+	sqlStr = "select name from user_basic where user_id = '" + m.LikerID + "'"
 	sqlResult, err = queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -590,13 +590,13 @@ func (cc *BloomFateChaincode) sendPermission(stub shim.ChaincodeStubInterface, a
 	sendTime := time.Now().Format(timestampFormat)
 	status := "pending"
 	// TODO:
-	sqlStr := "select user_name from account where user_id = '" + m.SenderID + "'"
+	sqlStr := "select name from user_basic where user_id = '" + m.SenderID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 	senderName := sqlResult[1][0]
-	sqlStr = "select user_name from account where user_id = '" + m.ReceiverID + "'"
+	sqlStr = "select name from user_basic where user_id = '" + m.ReceiverID + "'"
 	sqlResult, err = queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -728,13 +728,13 @@ func (cc *BloomFateChaincode) measureCredit(stub shim.ChaincodeStubInterface, ar
 	}
 	createdTime := time.Now().Format(timestampFormat)
 	// todo
-	sqlStr := "select user_name from account where user_id = '" + m.SenderID + "'"
+	sqlStr := "select name from user_basic where user_id = '" + m.SenderID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 	senderName := sqlResult[1][0]
-	sqlStr = "select user_name from account where user_id = '" + m.ReceiverID + "'"
+	sqlStr = "select name from user_basic where user_id = '" + m.ReceiverID + "'"
 	sqlResult, err = queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
