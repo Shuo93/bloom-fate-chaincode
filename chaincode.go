@@ -127,12 +127,12 @@ func (cc *BloomFateChaincode) uploadPersonalInfo(stub shim.ChaincodeStubInterfac
 	modifiedTime := time.Now().Format("20060102150405")
 	sqlStr := "insert into user_basic (user_id, name, age, sex, location, photo_hash, photo_format, " +
 		"phone, email, introduction, modified_time) values (" + m.Basic.UserID + ", " + m.Basic.Name + ", " +
-		m.Basic.Age + ", " + m.Basic.Sex + ", " + m.Basic.PhotoHash + ", " +
+		m.Basic.Age + ", " + m.Basic.Sex + ", " + m.Basic.Location + ", " + m.Basic.PhotoHash + ", " +
 		m.Basic.PhotoFormat + ", " + m.Basic.Phone + ", " + m.Basic.Email + ", " + m.Basic.Introduction + "," + modifiedTime + ")"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr = "insert into user_education (user_id, degree, school, encrypted_key, signature, modified_time) values (" + m.Basic.Introduction +
+	sqlStr = "insert into user_education (user_id, degree, school, encrypted_key, signature, modified_time) values (" + m.Basic.UserID +
 		", " + m.Education.Degree + ", " + m.Education.School + ", " + m.Education.EncryptedKey + ", " + m.Education.Signature + ", " +
 		modifiedTime + ")"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
