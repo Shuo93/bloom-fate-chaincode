@@ -38,18 +38,14 @@ func (t *BloomFateChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Respons
 		return t.measureCredit(stub, jsonArgs)
 
 	case "like":
-		// todo
 		return t.like(stub, jsonArgs)
 	case "unlike":
-		// todo
 		return t.unlike(stub, jsonArgs)
 
-	case "modifyPersonalInfo":
-		// todo
-		return t.modifyPersonalInfo(stub, jsonArgs)
-	case "uploadPersonalInfo":
-		// todo
-		return t.uploadPersonalInfo(stub, jsonArgs)
+	case "modifyPersonInfo":
+		return t.modifyPersonInfo(stub, jsonArgs)
+	case "uploadPersonInfo":
+		return t.uploadPersonInfo(stub, jsonArgs)
 
 	case "replyDate":
 		// todo
@@ -72,8 +68,7 @@ func (t *BloomFateChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Respons
 func (t *BloomFateChaincode) query(stub shim.ChaincodeStubInterface, function string, args string) pb.Response {
 	switch function {
 	case "PersonInfo":
-		// todo
-		return t.queryPersonalInfo(stub, args)
+		return t.queryPersonInfo(stub, args)
 	case "PersonList":
 		return t.queryPersonList(stub, args)
 	case "LikeList":
@@ -82,6 +77,7 @@ func (t *BloomFateChaincode) query(stub shim.ChaincodeStubInterface, function st
 		// todo
 		return t.queryPermession(stub, args)
 	case "Date":
+		// todo
 		return t.queryDate(stub, args)
 	case "Credit":
 		// todo
@@ -92,6 +88,9 @@ func (t *BloomFateChaincode) query(stub shim.ChaincodeStubInterface, function st
 	case "ModifyRecord":
 		// todo
 		return t.queryModifyRecord(stub, args)
+	case "CreditBalance":
+		// todo
+		return t.queryCreditBalance(stub, args)
 	default:
 		return shim.Error("The function has not been implemented")
 	}

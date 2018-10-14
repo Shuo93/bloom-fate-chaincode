@@ -112,7 +112,7 @@ type occupationMessage struct {
 	Signature    string `json:"signature"`
 }
 
-func (cc *BloomFateChaincode) uploadPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) uploadPersonInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	logger.Infof("JSON: %s", args)
 	type message struct {
 		Basic      basicMessage
@@ -169,7 +169,7 @@ func (cc *BloomFateChaincode) queryPublicKey(stub shim.ChaincodeStubInterface, a
 	return shim.Success([]byte(sqlResult[1][0]))
 }
 
-func (cc *BloomFateChaincode) queryPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) queryPersonInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		UserID string
 	}
@@ -297,6 +297,10 @@ func (cc *BloomFateChaincode) queryPersonList(stub shim.ChaincodeStubInterface, 
 		return shim.Error(err.Error())
 	}
 
+	if len(sqlResult) < 2 {
+		return shim.Success([]byte("no data"))
+	}
+
 	size := len(sqlResult) - 1
 	res := make([]basicMessage, size)
 	for i, r := range sqlResult[1:] {
@@ -320,11 +324,11 @@ func (cc *BloomFateChaincode) queryPersonList(stub shim.ChaincodeStubInterface, 
 	return shim.Success(resBytes)
 }
 
-func (cc *BloomFateChaincode) modifyPersonalInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
+func (cc *BloomFateChaincode) modifyPersonInfo(stub shim.ChaincodeStubInterface, args string) pb.Response {
 	type message struct {
 		UserID       string
 		InfoType     string
-		Feild        string
+		Field        string
 		Value        string
 		EncryptedKey string
 		Signature    string
@@ -337,10 +341,10 @@ func (cc *BloomFateChaincode) modifyPersonalInfo(stub shim.ChaincodeStubInterfac
 	modifiedTime := time.Now().Format("20060102150405")
 	var sqlStr string
 	if m.EncryptedKey == "" || m.Signature == "" {
-		sqlStr = "insert into user_" + m.InfoType + " (user_id, " + m.Feild + ", modified_time) values (" +
+		sqlStr = "insert into user_" + m.InfoType + " (user_id, " + m.Field + ", modified_time) values (" +
 			m.UserID + ", " + m.Value + ", " + modifiedTime + ")"
 	} else {
-		sqlStr = "insert into user_" + m.InfoType + " (user_id, " + m.Feild + ", encrypted_key, signature, modified_time) values (" +
+		sqlStr = "insert into user_" + m.InfoType + " (user_id, " + m.Field + ", encrypted_key, signature, modified_time) values (" +
 			m.UserID + ", " + m.Value + ", " + m.EncryptedKey + ", " + m.Signature + ", " + modifiedTime + ")"
 	}
 	if err := invokeBySQL(stub, sqlStr); err != nil {
@@ -804,6 +808,26 @@ func (cc *BloomFateChaincode) queryCredit(stub shim.ChaincodeStubInterface, args
 		return shim.Success([]byte("no data"))
 	}
 	return shim.Success(convertSQLResultToJSON(sqlResult))
+}
+
+func (cc *BloomFateChaincode) queryCreditBalance(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		UserID string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "select credit_value from account where user_id = '" + m.UserID + "'"
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if len(sqlResult) < 2 {
+		return shim.Success([]byte("no data"))
+	}
+	return shim.Success([]byte(sqlResult[1][0]))
 }
 
 func exchangeCreditValue(sender string, receiver string, value string, stub shim.ChaincodeStubInterface) error {
