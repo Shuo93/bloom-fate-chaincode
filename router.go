@@ -80,16 +80,13 @@ func (t *BloomFateChaincode) query(stub shim.ChaincodeStubInterface, function st
 		// todo
 		return t.queryDate(stub, args)
 	case "Credit":
-		// todo
 		return t.queryCredit(stub, args)
 	case "ModifyRecordByTime":
 		// todo
 		return t.queryModifyRecordByTime(stub, args)
 	case "ModifyRecord":
-		// todo
 		return t.queryModifyRecord(stub, args)
 	case "CreditBalance":
-		// todo
 		return t.queryCreditBalance(stub, args)
 	default:
 		return shim.Error("The function has not been implemented")

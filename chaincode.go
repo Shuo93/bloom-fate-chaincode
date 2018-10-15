@@ -680,7 +680,7 @@ func (cc *BloomFateChaincode) queryModifyRecord(stub shim.ChaincodeStubInterface
 	if err := json.Unmarshal(b, &m); err != nil {
 		return shim.Error(err.Error())
 	}
-	sqlStr := "select modified_time from user_" + m.InfoType + "where user_id = '" + m.UserID + "'"
+	sqlStr := "select modified_time from user_" + m.InfoType + "_history" + " where user_id = '" + m.UserID + "'"
 	sqlResult, err := queryBySQL(stub, sqlStr)
 	if err != nil {
 		return shim.Error(err.Error())
