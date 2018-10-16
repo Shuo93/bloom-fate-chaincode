@@ -606,7 +606,7 @@ func (cc *BloomFateChaincode) sendPermission(stub shim.ChaincodeStubInterface, a
 		return shim.Error(err.Error())
 	}
 	receiverName := sqlResult[1][0]
-	sqlStr = "insert into permission (sender_name, receiver_name, send_id, receiver_id, permission_type, permission_content, " +
+	sqlStr = "insert into permission (sender_name, receiver_name, sender_id, receiver_id, permission_type, permission_content, " +
 		"status, send_time) values (" + senderName + ", " + receiverName + ", " + m.SenderID + ", " +
 		m.ReceiverID + ", " + m.PermissionType + ", " + m.PermissionContent + ", " + status + ", " + sendTime + ")"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
@@ -640,6 +640,28 @@ func (cc *BloomFateChaincode) queryPermession(stub shim.ChaincodeStubInterface, 
 		return shim.Success([]byte("no data"))
 	}
 	return shim.Success(convertSQLResultToJSON(sqlResult))
+}
+
+func (cc *BloomFateChaincode) queryEncryptedContent(stub shim.ChaincodeStubInterface, args string) pb.Response {
+	type message struct {
+		UserID  string
+		Type    string
+		Content string
+	}
+	b := []byte(args)
+	var m message
+	if err := json.Unmarshal(b, &m); err != nil {
+		return shim.Error(err.Error())
+	}
+	sqlStr := "select " + m.Content + " from user_" + m.Type + " where user_id = '" + m.UserID + "'"
+	sqlResult, err := queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	if len(sqlResult) < 2 {
+		return shim.Success([]byte("no data"))
+	}
+	return shim.Success([]byte(sqlResult[1][0]))
 }
 
 func (cc *BloomFateChaincode) replyPermession(stub shim.ChaincodeStubInterface, args string) pb.Response {

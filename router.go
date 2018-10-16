@@ -51,14 +51,12 @@ func (t *BloomFateChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Respons
 		// todo
 		return t.replyDate(stub, jsonArgs)
 	case "sendDate":
-		// todo
 		return t.sendDate(stub, jsonArgs)
 
 	case "replyPermession":
 		// todo
 		return t.replyPermession(stub, jsonArgs)
 	case "sendPermission":
-		// todo
 		return t.sendPermission(stub, jsonArgs)
 	default:
 		return shim.Error("The function has not been implemented")
@@ -74,10 +72,8 @@ func (t *BloomFateChaincode) query(stub shim.ChaincodeStubInterface, function st
 	case "LikeList":
 		return t.queryLikeList(stub, args)
 	case "Permission":
-		// todo
 		return t.queryPermession(stub, args)
 	case "Date":
-		// todo
 		return t.queryDate(stub, args)
 	case "Credit":
 		return t.queryCredit(stub, args)
@@ -88,6 +84,10 @@ func (t *BloomFateChaincode) query(stub shim.ChaincodeStubInterface, function st
 		return t.queryModifyRecord(stub, args)
 	case "CreditBalance":
 		return t.queryCreditBalance(stub, args)
+	case "PublicKey":
+		return t.queryPublicKey(stub, args)
+	case "EncryptedContent":
+		return t.queryEncryptedContent(stub, args)
 	default:
 		return shim.Error("The function has not been implemented")
 	}
