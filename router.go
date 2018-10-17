@@ -31,10 +31,8 @@ func (t *BloomFateChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Respons
 		return t.login(stub, args[0])
 
 	case "confirmDate":
-		// todo
 		return t.confirmDate(stub, jsonArgs)
 	case "measureCredit":
-		// todo
 		return t.measureCredit(stub, jsonArgs)
 
 	case "like":
@@ -48,13 +46,11 @@ func (t *BloomFateChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Respons
 		return t.uploadPersonInfo(stub, jsonArgs)
 
 	case "replyDate":
-		// todo
 		return t.replyDate(stub, jsonArgs)
 	case "sendDate":
 		return t.sendDate(stub, jsonArgs)
 
 	case "replyPermession":
-		// todo
 		return t.replyPermession(stub, jsonArgs)
 	case "sendPermission":
 		return t.sendPermission(stub, jsonArgs)

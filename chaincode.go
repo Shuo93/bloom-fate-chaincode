@@ -606,9 +606,16 @@ func (cc *BloomFateChaincode) sendPermission(stub shim.ChaincodeStubInterface, a
 		return shim.Error(err.Error())
 	}
 	receiverName := sqlResult[1][0]
+
+	sqlStr = "select encrypted_key from user_" + m.PermissionType + " where user_id = '" + m.ReceiverID + "'"
+	sqlResult, err = queryBySQL(stub, sqlStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
 	sqlStr = "insert into permission (sender_name, receiver_name, sender_id, receiver_id, permission_type, permission_content, " +
-		"status, send_time) values (" + senderName + ", " + receiverName + ", " + m.SenderID + ", " +
-		m.ReceiverID + ", " + m.PermissionType + ", " + m.PermissionContent + ", " + status + ", " + sendTime + ")"
+		"status, encrypted_key, send_time) values (" + senderName + ", " + receiverName + ", " + m.SenderID + ", " +
+		m.ReceiverID + ", " + m.PermissionType + ", " + m.PermissionContent + ", " + status + ", " + sqlResult[1][0] + ", " + sendTime + ")"
 	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
@@ -783,15 +790,15 @@ func (cc *BloomFateChaincode) measureCredit(stub shim.ChaincodeStubInterface, ar
 	dateNum, _ := strconv.Atoi(sqlResult[1][6])
 	values := [6]string{m.General, m.Photo, m.Education, m.Occupation, m.Impression, m.Other}
 	for i, r := range sqlResult[1][:6] {
-		if values[i], err = updateCredit(values[i], dateNum, r); err != nil {
+		if values[i], err = updateCredit(r, dateNum, values[i]); err != nil {
 			return shim.Error(err.Error())
 		}
 	}
 	sqlStr = "insert into user_credit (user_id, general, photo, education, occupation, impression, other, date_num) values (" +
 		m.ReceiverID + ", " + values[0] + ", " + values[1] + ", " + values[2] + ", " + values[3] + ", " + values[4] + ", " +
 		values[5] + ", " + strconv.Itoa(dateNum+1) + ")"
-	sqlResult, err = queryBySQL(stub, sqlStr)
-	if err != nil {
+
+	if err := invokeBySQL(stub, sqlStr); err != nil {
 		return shim.Error(err.Error())
 	}
 	addCreditValue(m.SenderID, "2", stub)

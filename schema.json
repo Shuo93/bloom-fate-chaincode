@@ -6,7 +6,7 @@
             "user_name": "VARCHAR(20)",
             "password": "VARCHAR(64)",
             "credit_value": "DECIMAL(5,1)",
-            "public_key": "VARCHAR(100)",
+            "public_key": "VARCHAR(500)",
             "created_time": "VARCHAR(14)",
             "COLUMN ORDER": [
                 "user_id",
@@ -28,10 +28,10 @@
             "location": "VARCHAR(50)",
             "photo_hash": "VARCHAR(64)",
             "photo_format": "VARCHAR(10)",
-            "phone": "VARCHAR(20)",
+            "phone": "VARCHAR(500)",
             "email": "VARCHAR(20)",
-            "encrypted_key": "VARCHAR(100)",
-            "signature": "VARCHAR(100)",
+            "encrypted_key": "VARCHAR(500)",
+            "signature": "VARCHAR(500)",
             "introduction": "VARCHAR(100)",
             "modified_time": "VARCHAR(14)",
             "COLUMN ORDER": [
@@ -57,8 +57,8 @@
             "hash": "VARCHAR(64)",
             "user_id": "VARCHAR(64)",
             "format": "VARCHAR(10)",
-            "encrypted_key": "VARCHAR(100)",
-            "signature": "VARCHAR(100)",
+            "encrypted_key": "VARCHAR(500)",
+            "signature": "VARCHAR(500)",
             "modified_time": "VARCHAR(14)",
             "COLUMN ORDER": [
                 "hash",
@@ -75,9 +75,9 @@
         "user_education": {
             "user_id": "VARCHAR(64)",
             "degree": "VARCHAR(20)",
-            "school": "VARCHAR(100)",
-            "encrypted_key": "VARCHAR(100)",
-            "signature": "VARCHAR(100)",
+            "school": "VARCHAR(500)",
+            "encrypted_key": "VARCHAR(500)",
+            "signature": "VARCHAR(500)",
             "modified_time": "VARCHAR(14)",
             "COLUMN ORDER": [
                 "user_id",
@@ -95,9 +95,9 @@
             "user_id": "VARCHAR(64)",
             "company": "VARCHAR(50)",
             "job": "VARCHAR(20)",
-            "salary": "VARCHAR(100)",
-            "encrypted_key": "VARCHAR(100)",
-            "signature": "VARCHAR(100)",
+            "salary": "VARCHAR(500)",
+            "encrypted_key": "VARCHAR(500)",
+            "signature": "VARCHAR(500)",
             "modified_time": "VARCHAR(14)",
             "COLUMN ORDER": [
                 "user_id",
@@ -201,7 +201,7 @@
             "permission_type": "VARCHAR(50)",
             "permission_content": "VARCHAR(50)",
             "status": "VARCHAR(10)",
-            "encrypted_key": "VARCHAR(100)",
+            "encrypted_key": "VARCHAR(500)",
             "send_time": "VARCHAR(14)",
             "confirm_time": "VARCHAR(14)",
             "COLUMN ORDER": [
